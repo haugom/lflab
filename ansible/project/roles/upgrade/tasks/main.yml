@@ -1,0 +1,76 @@
+---
+- name: Update all packages to their latest version
+  apt:
+    name: "*"
+    state: latest
+
+# https://packages.cloud.google.com/apt/doc/apt-key.gpg
+- name: kubernetes apt key
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+    state: present
+
+- name: docker apt key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    keyring: /usr/share/keyrings/docker-archive-keyring.gpg
+    state: present
+
+#- name: Print all available facts
+#  ansible.builtin.debug:
+#    var: ansible_facts
+
+- name: Template a file to /etc/apt/sources.list.d/kubernetes.list
+  ansible.builtin.template:
+    src: kubernetes.sources.j2
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    mode: '0600'
+
+- name: Template a file to /etc/apt/sources.list.d/docker.list
+  ansible.builtin.template:
+    src: docker.sources.j2
+    dest: /etc/apt/sources.list.d/docker.list
+    mode: '0600'
+
+- name: Template a file to /etc/modules-load.d/k8s.conf
+  ansible.builtin.template:
+    src: k8s-modules.conf.j2
+    dest: /etc/modules-load.d/k8s.conf
+    mode: '0600'
+  register: result1
+
+- name: Template a file to /etc/sysctl.d/k8s.conf
+  ansible.builtin.template:
+    src: k8s-sysctl.conf.j2
+    dest: /etc/sysctl.d/k8s.conf
+    mode: '0600'
+  register: result2
+
+- name: sysctl --system
+  shell: sysctl -p --system
+  when: result1.changed or result2.changed
+
+- name: set ip_forward
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Install a list of packages
+  apt:
+    update_cache: yes
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - kubelet
+      - kubeadm
+      - kubectl
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io

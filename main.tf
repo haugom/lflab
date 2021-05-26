@@ -72,7 +72,7 @@ resource "google_compute_instance" "worker" {
 }
 
 resource "google_compute_network" "vpc" {
-  name                    = "kubernetes"
+  name                    = "gha-kubernetes"
   auto_create_subnetworks = "true"
 }
 
@@ -82,8 +82,23 @@ resource "google_compute_firewall" "public" {
 
   allow {
     protocol = "tcp"
-    ports    = ["22"]
+    ports    = ["22", "6443"]
   }
   source_ranges = var.cidr
+}
+
+resource "google_compute_firewall" "kubernetes" {
+  name    = "gha-lab-kubernetes"
+  network = google_compute_network.vpc.name
+
+  allow {
+    protocol = "icmp"
+  }
+
+  allow {
+    protocol = "tcp"
+    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767"]
+  }
+  source_tags = ["worker", "master"]
 }
 
