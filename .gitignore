@@ -4,3 +4,5 @@ terraform.tfvars
 .terraform.lock.hcl
 .terraform
 artifacts/
+/LFS258_V2021-02-05_SOLUTIONS.tar.xz
+/LFS258/

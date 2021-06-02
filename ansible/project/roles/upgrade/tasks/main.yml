@@ -17,6 +17,12 @@
     keyring: /usr/share/keyrings/docker-archive-keyring.gpg
     state: present
 
+- name: crio key
+  ansible.builtin.apt_key:
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x018ba5ad9df57a4448f0e6cf8becf1637ad8c79d
+    keyring: /usr/share/keyrings/crio-keyring.gpg
+    state: present
+
 #- name: Print all available facts
 #  ansible.builtin.debug:
 #    var: ansible_facts
@@ -25,6 +31,12 @@
   ansible.builtin.template:
     src: kubernetes.sources.j2
     dest: /etc/apt/sources.list.d/kubernetes.list
+    mode: '0600'
+
+- name: Template a file to /etc/apt/sources.list.d/crio.list
+  ansible.builtin.template:
+    src: crio.sources.j2
+    dest: /etc/apt/sources.list.d/crio.list
     mode: '0600'
 
 - name: Template a file to /etc/apt/sources.list.d/docker.list
@@ -47,6 +59,7 @@
     mode: '0600'
   register: result2
 
+
 - name: sysctl --system
   shell: sysctl -p --system
   when: result1.changed or result2.changed
@@ -60,7 +73,7 @@
     reload: yes
 
 - name: Install a list of packages
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     pkg:
       - apt-transport-https
@@ -68,9 +81,42 @@
       - curl
       - gnupg
       - lsb-release
-      - kubelet
-      - kubeadm
-      - kubectl
-      - docker-ce
+      - kubelet=1.19.1-00
+      - kubeadm=1.19.1-00
+      - kubectl=1.19.1-00
       - docker-ce-cli
-      - containerd.io
+      - cri-o-1.15
+
+- name: Prevent kubeadm from upgrading
+  ansible.builtin.dpkg_selections:
+    name: kubeadm
+    selection: hold
+- name: Prevent kubelet from upgrading
+  ansible.builtin.dpkg_selections:
+    name: kubelet
+    selection: hold
+- name: Prevent kubectl from upgrading
+  ansible.builtin.dpkg_selections:
+    name: kubectl
+    selection: hold
+
+- name: Ensure conmon is set
+  ansible.builtin.lineinfile:
+    path: /etc/crio/crio.conf
+    regexp: '^conmon = "/usr/libexec/crio/conmon"'
+    line: conmon = "/usr/bin/conmon"
+
+- name: Just force systemd to reread configs (2.4 and above)
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Enable service crio
+  ansible.builtin.service:
+    name: crio
+    enabled: yes
+    state: started
+
+- name: Generate /etc/hosts file
+  ansible.builtin.template:
+    src=hosts.j2
+    dest=/etc/hosts

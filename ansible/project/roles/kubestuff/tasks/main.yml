@@ -1,0 +1,11 @@
+---
+#- name: Generate /etc/kubernetes/kubeadm-config.yaml file
+#  ansible.builtin.template:
+#    src=kubeadm-config.yaml.j2
+#    dest=/etc/kubernetes/kubeadm-config.yaml
+#
+#- name: Template a file to /etc/default/kubelet
+#  ansible.builtin.template:
+#    src: kubelet.j2
+#    dest: /etc/default/kubelet
+#    mode: '0600'
