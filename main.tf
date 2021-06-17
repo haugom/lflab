@@ -82,7 +82,7 @@ resource "google_compute_firewall" "public" {
 
   allow {
     protocol = "tcp"
-    ports    = ["22", "6443"]
+    ports    = ["22", "6443", "80", "443", "30000-32767"]
   }
   source_ranges = var.cidr
 }
@@ -97,7 +97,7 @@ resource "google_compute_firewall" "kubernetes" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767"]
+    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443"]
   }
   source_tags = ["worker", "master"]
 }

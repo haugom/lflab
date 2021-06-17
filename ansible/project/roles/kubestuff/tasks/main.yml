@@ -1,11 +1,42 @@
 ---
-#- name: Generate /etc/kubernetes/kubeadm-config.yaml file
-#  ansible.builtin.template:
-#    src=kubeadm-config.yaml.j2
-#    dest=/etc/kubernetes/kubeadm-config.yaml
-#
-#- name: Template a file to /etc/default/kubelet
-#  ansible.builtin.template:
-#    src: kubelet.j2
-#    dest: /etc/default/kubelet
-#    mode: '0600'
+- name: Download calico.yaml
+  get_url:
+    url: https://docs.projectcalico.org/manifests/calico.yaml
+    dest: /etc/kubernetes/calico.yaml
+    mode: '0440'
+
+- name: Add the br_netfilter module
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+
+- ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+    reload: yes
+    state: present
+
+- name: Template a file to /etc/cni/net.d/100-crio-bridge.conf
+  ansible.builtin.template:
+    src: 100-crio-bridge.conf.j2
+    dest: /etc/cni/net.d/100-crio-bridge.conf
+    mode: '0600'
+  register: crio_bridge
+
+- name: Restart service crio
+  ansible.builtin.service:
+    name: crio
+    state: restarted
+  when: crio_bridge | changed
+
+- name: Template a file to /etc/default/kubelet
+  ansible.builtin.template:
+    src: kubelet.j2
+    dest: /etc/default/kubelet
+    mode: '0600'
+
+- name: Generate /etc/kubernetes/kubeadm-config.yaml file
+  ansible.builtin.template:
+    src=kubeadm-config.yaml.j2
+    dest=/etc/kubernetes/kubeadm-config.yaml
