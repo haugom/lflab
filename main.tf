@@ -97,7 +97,12 @@ resource "google_compute_firewall" "kubernetes" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443"]
+    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443", "179", "5473"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["179", "4789"]
   }
   source_tags = ["worker", "master"]
 }

@@ -17,6 +17,12 @@
     reload: yes
     state: present
 
+- name: Create directory if it does not exist /etc/cni/net.d/
+  ansible.builtin.file:
+    path: /etc/cni/net.d
+    state: directory
+    mode: '0755'
+
 - name: Template a file to /etc/cni/net.d/100-crio-bridge.conf
   ansible.builtin.template:
     src: 100-crio-bridge.conf.j2
@@ -28,7 +34,8 @@
   ansible.builtin.service:
     name: crio
     state: restarted
-  when: crio_bridge | changed
+  when:
+    - crio_bridge.changed
 
 - name: Template a file to /etc/default/kubelet
   ansible.builtin.template:

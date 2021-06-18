@@ -39,6 +39,12 @@
     dest: /etc/apt/sources.list.d/crio.list
     mode: '0600'
 
+- name: Template a file to /etc/containers/registries.conf
+  ansible.builtin.template:
+    src: crio.registries.conf.j2
+    dest: /etc/containers/registries.conf
+    mode: '0600'
+
 - name: Template a file to /etc/apt/sources.list.d/docker.list
   ansible.builtin.template:
     src: docker.sources.j2
