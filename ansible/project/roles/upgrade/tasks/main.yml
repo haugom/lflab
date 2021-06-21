@@ -39,6 +39,12 @@
     dest: /etc/apt/sources.list.d/crio.list
     mode: '0600'
 
+- name: Create directory if it does not exist /etc/containers/
+  ansible.builtin.file:
+    path: /etc/containers
+    state: directory
+    mode: '0755'
+
 - name: Template a file to /etc/containers/registries.conf
   ansible.builtin.template:
     src: crio.registries.conf.j2

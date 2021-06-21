@@ -1,0 +1,26 @@
+{
+    "kind": "Pod",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "curlpod",
+        "creationTimestamp": null,
+        "labels": {
+            "run": "pod"
+        }
+    },
+    "spec": {
+        "containers": [
+            {
+                "name": "pod",
+                "image": "nginx",
+		"ports": [
+			{"containerPort": 80, "protocol": "TCP"}	
+		],
+                "resources": {}
+            }
+        ],
+        "restartPolicy": "Always",
+        "dnsPolicy": "ClusterFirst"
+    },
+    "status": {}
+}

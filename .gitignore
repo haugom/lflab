@@ -6,3 +6,5 @@ terraform.tfvars
 artifacts/
 /LFS258_V2021-02-05_SOLUTIONS.tar.xz
 /LFS258/
+config
+kubernetes.default_6443/

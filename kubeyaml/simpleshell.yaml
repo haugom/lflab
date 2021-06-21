@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pod
+  name: simpleshell
+spec:
+  containers:
+  - name: simpleshell
+    image: nginx
+    resources: {}
+    volumeMounts:
+      - name: nfs-vol
+        mountPath: /data
+    env:
+    - name: ilike
+      valueFrom:
+        configMapKeyRef:
+          name: colors
+          key: favourite
+  volumes:
+    - name: nfs-vol
+      persistentVolumeClaim:
+        claimName: pvc-one
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
