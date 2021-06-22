@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: linkerd-viz 
+  namespace: linkerd-viz
+spec:
+  rules:
+    - host: web.linkerd-viz.svc.cluster.local
+      http:
+        paths:
+          - backend:
+              service:
+                name: web
+                port:
+                  number: 8084
+            path: /
+            pathType: ImplementationSpecific

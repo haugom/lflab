@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nettool
+spec:
+  containers:
+    - name: ubuntu
+      image: haugom/dns:test
+      command: ["sleep"]
+      args: ["infinity"]
+  nodeSelector: 
+    system: secondOne
