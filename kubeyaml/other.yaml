@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: other
+  name: other
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: other
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: other
+    spec:
+      nodeSelector:
+        status: other
+      containers:
+        - image: busybox
+          name: other1
+          args:
+            - sleep
+            - "100000"
+        - image: busybox
+          name: other2
+          args:
+            - sleep
+            - "100000"
+        - image: busybox
+          name: other3
+          args:
+            - sleep
+            - "100000"
+        - image: busybox
+          name: other4
+          args:
+            - sleep
+            - "100000"
+          resources: {}

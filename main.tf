@@ -92,6 +92,10 @@ resource "google_compute_firewall" "kubernetes" {
   network = google_compute_network.vpc.name
 
   allow {
+    protocol = "ipip"
+  }
+
+  allow {
     protocol = "icmp"
   }
 

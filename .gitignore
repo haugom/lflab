@@ -8,3 +8,5 @@ artifacts/
 /LFS258/
 config
 kubernetes.default_6443/
+metrics-server/
+fluentd-kubernetes-daemonset/

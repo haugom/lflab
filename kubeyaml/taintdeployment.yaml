@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: taint-deployment
+  name: taint-deployment
+spec:
+  replicas: 8
+  selector:
+    matchLabels:
+      app: taint-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: taint-deployment
+    spec:
+      containers:
+      - image: nginx:1.20.1
+        name: nginx
+        ports:
+          - containerPort: 80
+        resources: {}

@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: elasticsearch
+  namespace: accounting
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  rules:
+    - host: elasticsearch.accounting.svc.cluster.local
+      http:
+        paths:
+          - backend:
+              service:
+                name: es-es-http
+                port:
+                  number: 9200
+            path: /
+            pathType: ImplementationSpecific

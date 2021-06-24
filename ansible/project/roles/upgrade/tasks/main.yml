@@ -84,6 +84,14 @@
     state: present
     reload: yes
 
+- name: set vm.max_map_count
+  ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: '262144'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
 - name: Install a list of packages
   ansible.builtin.apt:
     update_cache: yes

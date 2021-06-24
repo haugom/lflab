@@ -12,3 +12,18 @@ spec:
     path: /opt/sfw
     server: gha-worker-0
     readOnly: false
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pvvol-2
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /opt/sfw2
+    server: gha-worker-0
+    readOnly: false
