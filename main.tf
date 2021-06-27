@@ -138,6 +138,52 @@ resource "google_compute_instance" "worker2" {
   }
 }
 
+//resource "google_compute_instance" "cp" {
+//  name         = "gha-cp-0"
+//  machine_type = "n1-standard-2"
+//  description = "kubernetes master for lf class for gha"
+//
+//  tags = ["master", "gha"]
+//
+//  boot_disk {
+//    initialize_params {
+//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      size = 20
+//    }
+//  }
+//
+//  network_interface {
+//    # A default network is created for all GCP projects
+//    network = google_compute_network.vpc.self_link
+//    access_config {
+//    }
+//  }
+//}
+//
+//resource "google_compute_instance" "worker-lab" {
+//  name         = "gha-lab-worker-0"
+//  machine_type = "n1-standard-2"
+//  description = "kubernetes master for lf class for gha"
+//
+//  tags = ["worker", "gha"]
+//
+//  boot_disk {
+//    initialize_params {
+//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      size = 20
+//    }
+//  }
+//
+//  network_interface {
+//    # A default network is created for all GCP projects
+//    network = google_compute_network.vpc.self_link
+//    access_config {
+//
+//    }
+//  }
+//}
+//
+
 resource "google_compute_network" "vpc" {
   name                    = "gha-kubernetes"
   auto_create_subnetworks = "true"

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx
+  namespace: haugom
+spec:
+  tls:
+  - hosts:
+      - nginx.lab.cloud.haugom.org
+    secretName: lab-tls
+  rules:
+  - host: nginx.lab.cloud.haugom.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx
+            port:
+              number: 80
+        path: /
+        pathType: Exact
+status:
+  loadBalancer: {}
