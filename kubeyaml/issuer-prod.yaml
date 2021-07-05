@@ -3,7 +3,6 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: letsencrypt-prod
-  namespace: haugom
 spec:
   acme:
     # The ACME server URL

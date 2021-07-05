@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: second
+  name: second
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: second
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: second
+    spec:
+      serviceAccountName: secret-access-sa
+      #      securityContext:
+      #  runAsUser: 1000
+      containers:
+      - image: busybox
+        command:
+          - /bin/sleep
+        args:
+          - "3600"
+        name: busybox
+        volumeMounts:
+          - name: mysql
+            mountPath: /mysqlpassword
+        securityContext:
+          capabilities:
+            add:
+              - "NET_ADMIN"
+              - "SYS_TIME"
+          runAsUser: 2000
+          allowPrivilegeEscalation: false
+
+        resources: {}
+      - image: nginx:1.21
+        name: nginx
+        ports:
+          - containerPort: 80
+      volumes:
+        - name: mysql
+          secret:
+            secretName: lfsecret
+status: {}
