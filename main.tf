@@ -48,49 +48,49 @@ resource "google_compute_instance" "master" {
   }
 }
 
-resource "google_compute_instance" "master2" {
-  name         = "gha-master-1"
-  machine_type = "n1-standard-2"
-  description = "kubernetes master for lf class for gha"
+//resource "google_compute_instance" "master2" {
+//  name         = "gha-master-1"
+//  machine_type = "n1-standard-2"
+//  description = "kubernetes master for lf class for gha"
+//
+//  tags = ["master", "gha"]
+//
+//  boot_disk {
+//    initialize_params {
+//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      size = 20
+//    }
+//  }
+//
+//  network_interface {
+//    # A default network is created for all GCP projects
+//    network = google_compute_network.vpc.self_link
+//    access_config {
+//    }
+//  }
+//}
 
-  tags = ["master", "gha"]
-
-  boot_disk {
-    initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-1804-lts"
-      size = 20
-    }
-  }
-
-  network_interface {
-    # A default network is created for all GCP projects
-    network = google_compute_network.vpc.self_link
-    access_config {
-    }
-  }
-}
-
-resource "google_compute_instance" "master3" {
-  name         = "gha-master-2"
-  machine_type = "n1-standard-2"
-  description = "kubernetes master for lf class for gha"
-
-  tags = ["master", "gha"]
-
-  boot_disk {
-    initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-1804-lts"
-      size = 20
-    }
-  }
-
-  network_interface {
-    # A default network is created for all GCP projects
-    network = google_compute_network.vpc.self_link
-    access_config {
-    }
-  }
-}
+//resource "google_compute_instance" "master3" {
+//  name         = "gha-master-2"
+//  machine_type = "n1-standard-2"
+//  description = "kubernetes master for lf class for gha"
+//
+//  tags = ["master", "gha"]
+//
+//  boot_disk {
+//    initialize_params {
+//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      size = 20
+//    }
+//  }
+//
+//  network_interface {
+//    # A default network is created for all GCP projects
+//    network = google_compute_network.vpc.self_link
+//    access_config {
+//    }
+//  }
+//}
 
 resource "google_compute_instance" "worker" {
   name         = "gha-worker-0"
@@ -192,12 +192,24 @@ resource "google_compute_network" "vpc" {
 resource "google_compute_firewall" "public" {
   name    = "gha-lab"
   network = google_compute_network.vpc.name
+  priority = 100
 
   allow {
     protocol = "tcp"
     ports    = ["22", "6443", "80", "443", "30000-32767"]
   }
   source_ranges = var.cidr
+}
+
+resource "google_compute_firewall" "public_http" {
+  name    = "gha-lab-http"
+  network = google_compute_network.vpc.name
+
+  priority = 1001
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443"]
+  }
 }
 
 resource "google_compute_firewall" "kubernetes" {
@@ -214,13 +226,12 @@ resource "google_compute_firewall" "kubernetes" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443", "179", "5473", "111", "2049"]
+    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443", "179", "5473", "111", "2049", "6783", "8443"]
   }
 
   allow {
     protocol = "udp"
-    ports    = ["179", "4789", "111", "2049"]
+    ports    = ["179", "4789", "111", "2049", "6783", "6784"]
   }
   source_tags = ["worker", "master"]
 }
-

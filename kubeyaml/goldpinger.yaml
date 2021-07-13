@@ -114,6 +114,8 @@ subjects:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  annotations:
+    cert-manager.io/issuer: letsencrypt-prod
   name: ingress-goldpinger
   namespace: goldpinger
 spec:
@@ -128,3 +130,17 @@ spec:
                   number: 8080
             path: /
             pathType: ImplementationSpecific
+    - host: goldpinger.lab.cloud.haugom.org
+      http:
+        paths:
+          - backend:
+              service:
+                name: goldpinger
+                port:
+                  number: 8080
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+      - goldpinger.lab.cloud.haugom.org
+      secretName: tls-goldpinger

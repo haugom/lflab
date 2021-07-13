@@ -19,7 +19,13 @@
 
 - name: crio key
   ansible.builtin.apt_key:
-    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x018ba5ad9df57a4448f0e6cf8becf1637ad8c79d
+    url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}/{{ crio_os }}/Release.key
+    keyring: /usr/share/keyrings/crio-keyring.gpg
+    state: present
+
+- name: libcontainers key
+  ansible.builtin.apt_key:
+    url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/Release.key
     keyring: /usr/share/keyrings/crio-keyring.gpg
     state: present
 
@@ -35,8 +41,13 @@
 
 - name: Template a file to /etc/apt/sources.list.d/crio.list
   ansible.builtin.template:
-    src: crio.sources.j2
+    src: crio-list.j2
     dest: /etc/apt/sources.list.d/crio.list
+    mode: '0600'
+- name: Template a file to /etc/apt/sources.list.d/libcontainers-stable.list
+  ansible.builtin.template:
+    src: libcontainers-stable.j2
+    dest: /etc/apt/sources.list.d/libcontainers-stable.list
     mode: '0600'
 
 - name: Create directory if it does not exist /etc/containers/
@@ -105,7 +116,8 @@
       - kubeadm={{ kubernetes_version }}-00
       - kubectl={{ kubernetes_version }}-00
       - docker-ce-cli
-      - cri-o-{{ crio_version }}
+      - cri-o
+      - cri-o-runc
       - bash-completion
 
 - name: Prevent kubeadm from upgrading
