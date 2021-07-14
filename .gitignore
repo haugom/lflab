@@ -13,3 +13,4 @@ fluentd-kubernetes-daemonset/
 s_A/
 LFD259/
 kubeyaml/kubevela-demo/
+.idea/
