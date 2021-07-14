@@ -1,0 +1,12 @@
+apiVersion: core.oam.dev/v1beta1
+kind: TraitDefinition
+metadata:
+  annotations:
+    defifnition.oam.dev/description: "patch ingress with tls"
+  name: ing-tls
+spec:
+  appliesToWorkloads:
+    - ingresses.networking.k8s.io
+  schematic:
+    cue:
+      template: |

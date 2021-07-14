@@ -1,0 +1,22 @@
+apiVersion: core.oam.dev/v1beta1
+kind: TraitDefinition
+metadata:
+  annotations:
+    definition.oam.dev/description: Inject a sidecar container to the component.
+    meta.helm.sh/release-name: kubevela
+    meta.helm.sh/release-namespace: vela-system
+  creationTimestamp: "2021-07-13T08:13:36Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: sidecar
+  namespace: vela-system
+  resourceVersion: "66952"
+  uid: c79547f4-a7ba-4a50-981e-7b697768f18a
+spec:
+  appliesToWorkloads:
+  - deployments.apps
+  podDisruptive: true
+  schematic:
+    cue:
+      template: |

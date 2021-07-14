@@ -1,0 +1,57 @@
+apiVersion: core.oam.dev/v1beta1
+kind: TraitDefinition
+metadata:
+  annotations:
+    definition.oam.dev/description: Enable public web traffic for the component.
+    meta.helm.sh/release-name: kubevela
+    meta.helm.sh/release-namespace: vela-system
+  creationTimestamp: "2021-07-13T08:13:36Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: ingress
+  namespace: vela-system
+  resourceVersion: "66955"
+  uid: 866b5d82-9eaa-4e92-9929-ead061182a61
+spec:
+  appliesToWorkloads:
+  - webservice
+  - worker
+  podDisruptive: false
+  schematic:
+    cue:
+      template: "// trait template can have multiple outputs in one trait\noutputs:
+        service: {\n\tapiVersion: \"v1\"\n\tkind:       \"Service\"\n\tmetadata:\n\t\tname:
+        context.name\n\tspec: {\n\t\tselector: {\n\t\t\t\"app.oam.dev/component\":
+        context.name\n\t\t}\n\t\tports: [\n\t\t\tfor k, v in parameter.http {\n\t\t\t\tport:
+        \      v\n\t\t\t\ttargetPort: v\n\t\t\t},\n\t\t]\n\t}\n}\n\noutputs: ingress:
+        {\n\tapiVersion: \"networking.k8s.io/v1beta1\"\n\tkind:       \"Ingress\"\n\tmetadata:\n\t\tname:
+        context.name\n\tspec: {\n\t\trules: [{\n\t\t\thost: parameter.domain\n\t\t\thttp:
+        {\n\t\t\t\tpaths: [\n\t\t\t\t\tfor k, v in parameter.http {\n\t\t\t\t\t\tpath:
+        k\n\t\t\t\t\t\tbackend: {\n\t\t\t\t\t\t\tserviceName: context.name\n\t\t\t\t\t\t\tservicePort:
+        v\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t]\n\t\t\t}\n\t\t}]\n\t}\n}\n\nparameter:
+        {\n\t// +usage=Specify the domain you want to expose\n\tdomain: string\n\n\t//
+        +usage=Specify the mapping relationship between the http path and the workload
+        port\n\thttp: [string]: int\n}\n"
+  status:
+    customStatus: |-
+      let igs = context.outputs.ingress.status.loadBalancer.ingress
+      if igs == _|_ {
+        message: "No loadBalancer found, visiting by using 'vela port-forward " + context.appName + " --route'\n"
+      }
+      if len(igs) > 0 {
+        if igs[0].ip != _|_ {
+          message: "Visiting URL: " + context.outputs.ingress.spec.rules[0].host + ", IP: " + igs[0].ip
+        }
+        if igs[0].ip == _|_ {
+          message: "Visiting URL: " + context.outputs.ingress.spec.rules[0].host
+        }
+      }
+    healthPolicy: |
+      isHealth: len(context.outputs.service.spec.clusterIP) > 0
+status:
+  configMapRef: schema-ingress
+  latestRevision:
+    name: ingress-v1
+    revision: 1
+    revisionHash: 435d4453a23e31d1
