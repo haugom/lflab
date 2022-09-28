@@ -12,5 +12,6 @@ metrics-server/
 fluentd-kubernetes-daemonset/
 s_A/
 LFD259/
+LFS260/
 kubeyaml/kubevela-demo/
 .idea/
