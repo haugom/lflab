@@ -35,7 +35,7 @@ resource "google_compute_instance" "master" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
       size = 20
     }
   }
@@ -57,7 +57,7 @@ resource "google_compute_instance" "master" {
 //
 //  boot_disk {
 //    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
 //      size = 20
 //    }
 //  }
@@ -79,7 +79,7 @@ resource "google_compute_instance" "master" {
 //
 //  boot_disk {
 //    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
 //      size = 20
 //    }
 //  }
@@ -101,7 +101,7 @@ resource "google_compute_instance" "worker" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
       size = 20
     }
   }
@@ -124,7 +124,7 @@ resource "google_compute_instance" "worker2" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
       size = 20
     }
   }
@@ -147,7 +147,7 @@ resource "google_compute_instance" "worker2" {
 //
 //  boot_disk {
 //    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
 //      size = 20
 //    }
 //  }
@@ -169,7 +169,7 @@ resource "google_compute_instance" "worker2" {
 //
 //  boot_disk {
 //    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
 //      size = 20
 //    }
 //  }

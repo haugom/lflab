@@ -1,0 +1,2 @@
+# curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.4/manifests/calico.yaml -O
+# curl -L https://github.com/projectcalico/calico/releases/download/v3.24.4/calicoctl-linux-amd64 -o calicoctl

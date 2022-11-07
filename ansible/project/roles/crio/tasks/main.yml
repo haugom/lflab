@@ -1,0 +1,41 @@
+- name: crio key
+  ansible.builtin.apt_key:
+    url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/Release.key
+
+    keyring: /usr/share/keyrings/crio-keyring.gpg
+    state: present
+
+- name: libcontainers key
+  ansible.builtin.apt_key:
+    url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_version }}/{{ crio_os }}/Release.key
+    keyring: /usr/share/keyrings/crio-keyring.gpg
+    state: present
+
+- name: Template a file to /etc/apt/sources.list.d/crio.list
+  ansible.builtin.template:
+    src: crio-list.j2
+    dest: /etc/apt/sources.list.d/crio.list
+    mode: '0640'
+
+- name: Template a file to /etc/apt/sources.list.d/libcontainers-stable.list
+  ansible.builtin.template:
+    src: libcontainers-stable.j2
+    dest: /etc/apt/sources.list.d/libcontainers-stable.list
+    mode: '0640'
+
+- name: Install a list of packages
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - cri-o
+      - cri-o-runc
+
+- name: Just force systemd to reread configs (2.4 and above)
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Enable service crio
+  ansible.builtin.service:
+    name: crio
+    enabled: yes
+    state: started
