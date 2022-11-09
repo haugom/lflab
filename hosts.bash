@@ -17,6 +17,12 @@ worker_name2=$(jq '.resources[] | select('.name' == "worker2") | {ip: .instances
 #lab_worker_ip=$(jq '.resources[] | select('.name' == "worker-lab") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.ip')
 #lab_worker_name=$(jq '.resources[] | select('.name' == "worker-lab") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.name')
 
+master_ip1=$(jq '.resources[] | select('.name' == "master1") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.ip')
+master_name1=$(jq '.resources[] | select('.name' == "master1") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.name')
+minion_ip=$(jq '.resources[] | select('.name' == "minion") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.ip')
+minion_name=$(jq '.resources[] | select('.name' == "minion") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.name')
+minion_ip2=$(jq '.resources[] | select('.name' == "minion2") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.ip')
+minion_name2=$(jq '.resources[] | select('.name' == "minion2") | {ip: .instances[0].attributes.network_interface[0].access_config[0].nat_ip, name: .instances[0].attributes.name}' terraform.tfstate  | jq -r '.name')
 
 cat <<EOF > ansible/inventory/hosts
 [all]
@@ -28,6 +34,11 @@ $worker_name2 ansible_host=$worker_ip2 ansible_user=haugom
 #$cp_name ansible_host=$cp_ip ansible_user=haugom
 #$lab_worker_name ansible_host=$lab_worker_ip ansible_user=haugom
 
+$master_name1 ansible_host=$master_ip1 ansible_user=haugom
+$minion_name ansible_host=$minion_ip ansible_user=haugom
+$minion_name2 ansible_host=$minion_ip2 ansible_user=haugom
+
+
 [kubernetes]
 $master_name
 #$master_name2
@@ -38,9 +49,13 @@ $worker_name2
 [kubernetes2]
 #$cp_name
 #$lab_worker_name
+$master_name1
+$minion_name
+$minion_name2
 
 [master]
 $master_name
+$master_name1
 #$master_name2
 #$master_name3
 

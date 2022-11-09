@@ -1,5 +1,6 @@
 ---
-- hosts: kubernetes
+# ansible-galaxy install gantsign.golang
+- hosts: kubernetes2
   roles:
     - role: gantsign.golang
       golang_gopath: '$HOME/workspace-go'

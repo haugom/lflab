@@ -14,7 +14,7 @@
   ansible.builtin.template:
     src: helm-stable.j2
     dest: /etc/apt/sources.list.d/helm-stable.list
-    mode: '0640'
+    mode: '0644'
 
 - name: Install a list of packages
   ansible.builtin.apt:
