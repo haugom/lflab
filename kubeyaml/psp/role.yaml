@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: db-no-priv
+  namespace: geir
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: psp:no-priv
+subjects:
+- kind: ServiceAccount
+  name: db-one
+  namespace: geir
