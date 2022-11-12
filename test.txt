@@ -1,0 +1,9 @@
+# simple notes...
+
+sudo kubeadm init | tee output.txt
+
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/calico.yaml | kubectl apply -f -
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.10.0
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
