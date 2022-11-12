@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: psp:no-priv
+  namespace: geir
+rules:
+- apiGroups:
+  - policy
+  resourceNames:
+  - no-priv
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
