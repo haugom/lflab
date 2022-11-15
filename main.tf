@@ -27,6 +27,27 @@ resource "google_compute_instance" "master0" {
     }
   }
 }
+resource "google_compute_instance" "master1" {
+  name         = "gha-master-1"
+  machine_type = "n1-standard-2"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["master", "gha"]
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 20
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+    }
+  }
+}
 
 resource "google_compute_instance" "minion0" {
   name         = "gha-minion-0"
@@ -55,6 +76,30 @@ resource "google_compute_instance" "minion0" {
 
 resource "google_compute_instance" "minion1" {
   name         = "gha-minion-1"
+  machine_type = "n1-highmem-2"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 20
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+
+    }
+  }
+}
+resource "google_compute_instance" "minion2" {
+  name         = "gha-minion-2"
   machine_type = "n1-highmem-2"
   description = "kubernetes master for lf class for gha"
 
@@ -120,7 +165,7 @@ resource "google_compute_firewall" "kubernetes" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443", "179", "5473", "111", "2049", "6783", "8443"]
+    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443", "179", "5473", "111", "2049", "6783", "8443", "8765"]
   }
 
   allow {

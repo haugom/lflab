@@ -115,6 +115,7 @@
       - kubeadm={{ kubernetes_version }}-00
       - kubectl={{ kubernetes_version }}-00
       - docker-ce-cli
+      - docker-ce
       - bash-completion
       - jq
 
