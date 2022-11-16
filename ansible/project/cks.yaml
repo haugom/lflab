@@ -1,5 +1,5 @@
 ---
-- hosts: kubernetes3
+- hosts: kubernetes4
   become: yes
   roles:
     - { name: roles/cks }

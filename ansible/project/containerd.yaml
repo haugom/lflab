@@ -1,0 +1,6 @@
+---
+# ansible-galaxy install gantsign.golang
+- hosts: kubernetes4
+  become: True
+  roles:
+    - { name: roles/containerd }

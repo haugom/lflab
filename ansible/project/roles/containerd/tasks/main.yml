@@ -1,0 +1,38 @@
+---
+- name: Install a list of packages
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose-plugin
+      - containerd
+      - runc
+
+- name: Create directory if it does not exist /opt/cni/bin
+  ansible.builtin.file:
+    path: /opt/cni/bin
+    state: directory
+    mode: '0755'
+
+- name: Install cni plugins
+  ansible.builtin.unarchive:
+    src: https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+    dest: /opt/cni/bin
+    remote_src: yes
+
+- name: Template a file to /etc/containerd/config.toml.j2
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: /etc/containerd/config.toml
+    mode: '0600'
+
+- name: Enable service containerd
+  ansible.builtin.service:
+    name: containerd
+    enabled: yes
+    state: started
+
+- name: Just force systemd to reread configs (2.4 and above)
+  ansible.builtin.systemd:
+    daemon_reload: yes

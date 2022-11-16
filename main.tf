@@ -48,6 +48,27 @@ resource "google_compute_instance" "master1" {
     }
   }
 }
+resource "google_compute_instance" "master2" {
+  name         = "gha-master-2"
+  machine_type = "n1-standard-2"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["master", "gha"]
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 20
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+    }
+  }
+}
 
 resource "google_compute_instance" "minion0" {
   name         = "gha-minion-0"
@@ -101,6 +122,54 @@ resource "google_compute_instance" "minion1" {
 resource "google_compute_instance" "minion2" {
   name         = "gha-minion-2"
   machine_type = "n1-highmem-2"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 20
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+
+    }
+  }
+}
+resource "google_compute_instance" "minion3" {
+  name         = "gha-minion-3"
+  machine_type = "n1-standard-2"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 20
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+
+    }
+  }
+}
+resource "google_compute_instance" "minion4" {
+  name         = "gha-minion-4"
+  machine_type = "n1-standard-2"
   description = "kubernetes master for lf class for gha"
 
   tags = ["minion", "gha"]

@@ -102,6 +102,12 @@
     name: kubectl
     selection: install
 
+- name: "Install yq {{ yq_version }}"
+  get_url:
+    url: "https://github.com/mikefarah/yq/releases/download/{{ yq_version }}/yq_linux_amd64"
+    dest: /usr/local/bin/yq
+    mode: 'u=rx,g=rx,o=rx'
+
 - name: Install a list of packages
   ansible.builtin.apt:
     update_cache: yes
@@ -114,8 +120,8 @@
       - kubelet={{ kubernetes_version }}-00
       - kubeadm={{ kubernetes_version }}-00
       - kubectl={{ kubernetes_version }}-00
-      - docker-ce-cli
-      - docker-ce
+#      - docker-ce-cli
+#      - docker-ce
       - bash-completion
       - jq
 
