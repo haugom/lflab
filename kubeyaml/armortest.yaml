@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: armortest
+  name: armortest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: armortest
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/nginx: localhost/k8s-apparmor-example-deny-write
+      creationTimestamp: null
+      labels:
+        app: armortest
+    spec:
+      containers:
+      - image: nginx:1.23.2
+        command:
+          - /bin/sh
+        args:
+          - -c
+          - |
+            cat /proc/1/attr/current
+            sleep infinity
+        name: nginx
+        resources: {}
+status: {}
