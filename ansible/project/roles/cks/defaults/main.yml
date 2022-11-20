@@ -1,2 +1,2 @@
-kubernetes_version: 1.23.14
+kubernetes_version: 1.24.8
 yq_version: v4.30.4

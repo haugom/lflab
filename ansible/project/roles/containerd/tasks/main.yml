@@ -1,4 +1,19 @@
 ---
+- name: Template a file to /etc/modules-load.d/containerd.conf
+  ansible.builtin.template:
+    src: containerd.conf.j2
+    dest: /etc/modules-load.d/containerd.conf
+    mode: '0644'
+
+- name: Template a file to /etc/sysctl.d/99-kubernetes-cri.conf
+  ansible.builtin.template:
+    src: 99-kubernetes-cri.conf.j2
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    mode: '0644'
+
+- name: sysctl --system
+  shell: sysctl -p --system
+
 - name: Install a list of packages
   ansible.builtin.apt:
     update_cache: yes
@@ -6,8 +21,13 @@
       - docker-ce
       - docker-ce-cli
       - docker-compose-plugin
-      - containerd
-      - runc
+      - containerd.io
+
+- name: Enable service containerd
+  ansible.builtin.service:
+    name: containerd
+    enabled: yes
+    state: started
 
 - name: Create directory if it does not exist /opt/cni/bin
   ansible.builtin.file:
@@ -21,18 +41,43 @@
     dest: /opt/cni/bin
     remote_src: yes
 
-- name: Template a file to /etc/containerd/config.toml.j2
+- name: Install crictl
+  ansible.builtin.unarchive:
+    src: "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ crictl_version }}/crictl-{{ crictl_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: Template a file to /etc/containerd/config.toml
   ansible.builtin.template:
     src: config.toml.j2
     dest: /etc/containerd/config.toml
-    mode: '0600'
+    mode: '0644'
+  register: containerd
 
-- name: Enable service containerd
-  ansible.builtin.service:
-    name: containerd
-    enabled: yes
-    state: started
+# setup crictl to use containerd.sock
+- name: Template a file to /etc/crictl.yaml
+  ansible.builtin.template:
+    src: crictl.yaml.j2
+    dest: /etc/crictl.yaml
+    mode: '0644'
 
-- name: Just force systemd to reread configs (2.4 and above)
+# install gvisor
+- name: containerd-shim-runsc-v1
+  ansible.builtin.get_url:
+    url: https://storage.googleapis.com/gvisor/releases/nightly/latest/containerd-shim-runsc-v1
+    dest: /usr/bin/containerd-shim-runsc-v1
+    mode: '0755'
+
+- name: gvisor/runsc
+  ansible.builtin.get_url:
+    url: https://storage.googleapis.com/gvisor/releases/nightly/latest/runsc
+    dest: /usr/bin/runsc
+    mode: '0755'
+
+- name: Restart service containerd
   ansible.builtin.systemd:
+    state: restarted
     daemon_reload: yes
+    name: containerd
+  when:
+    - containerd.changed

@@ -1,13 +1,11 @@
 ---
-- hosts: kubernetes2
+- hosts: minion
   become: yes
   roles:
-    - { name: roles/cks }
-    - { name: roles/crio }
     - role: gantsign.golang
       golang_gopath: '$HOME/workspace-go'
-
-- hosts: kubernetes2
-  become: yes
-  roles:
     - { name: roles/helm }
+    - { name: roles/cks }
+    - { name: roles/containerd }
+#    - { name: roles/crio }
+

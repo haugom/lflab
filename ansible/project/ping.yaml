@@ -1,0 +1,5 @@
+---
+- hosts: minion
+  tasks:
+    - name: Ping host
+      ansible.builtin.ping:
