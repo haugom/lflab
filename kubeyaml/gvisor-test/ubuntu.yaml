@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ubuntu
+  name: ubuntu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: gha-master-0
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+      containers:
+        - image: ubuntu
+          securityContext:
+            privileged: true
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              sleep infinity
+          name: ubuntu
+          resources: {}

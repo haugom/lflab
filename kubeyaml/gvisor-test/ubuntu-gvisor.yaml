@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ubuntu-gvisor
+  name: ubuntu-gvisor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu-gvisor
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ubuntu-gvisor
+    spec:
+      runtimeClassName: gvisor
+      nodeSelector:
+        kubernetes.io/hostname: gha-master-0
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+      containers:
+        - image: ubuntu
+          securityContext:
+            privileged: false
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              sleep infinity
+          name: ubuntu-gvisor
+          resources: {}

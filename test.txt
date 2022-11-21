@@ -1,6 +1,6 @@
 # simple notes...
 
-sudo kubeadm init | tee output.txt
+sudo kubeadm init --cri-socket unix:///run/containerd/containerd.sock | tee output.txt
 
 curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/calico.yaml | kubectl apply -f -
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.0/cert-manager.crds.yaml
