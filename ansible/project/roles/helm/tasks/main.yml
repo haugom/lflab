@@ -21,3 +21,9 @@
     update_cache: yes
     pkg:
       - helm
+
+- name: Template a file to /etc/profile.d/
+  ansible.builtin.template:
+    src: helm_profile.j2
+    dest: /etc/profile.d/helm.sh
+    mode: '0644'

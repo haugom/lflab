@@ -129,3 +129,9 @@
     url: https://docs.projectcalico.org/manifests/calico.yaml
     dest: /home/haugom/calico.yaml
     mode: '0444'
+
+- name: Template a file to /etc/profile.d/
+  ansible.builtin.template:
+    src: profile_kubectl.j2
+    dest: /etc/profile.d/kubectl.sh
+    mode: '0644'
