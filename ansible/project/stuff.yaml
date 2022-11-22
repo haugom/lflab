@@ -8,5 +8,6 @@
     - { name: roles/cks }
     - { name: roles/gvisor }
     - { name: roles/containerd }
+    - { name: roles/falco }
 #    - { name: roles/crio }
 
