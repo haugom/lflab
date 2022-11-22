@@ -1,0 +1,17 @@
+- name: gvisor apt key
+  ansible.builtin.apt_key:
+    url: https://gvisor.dev/archive.key
+    keyring:  /usr/share/keyrings/gvisor-archive-keyring.gpg
+    state: present
+
+- name: Template a file to /etc/apt/sources.list.d/gvisor.list
+  ansible.builtin.template:
+    src: gvisor-list.j2
+    dest: /etc/apt/sources.list.d/gvisor.list
+    mode: '0644'
+
+- name: Install gvisor
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - runsc

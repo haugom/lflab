@@ -51,30 +51,30 @@ resource "google_compute_instance" "minion0" {
     }
   }
 }
-#resource "google_compute_instance" "minion1" {
-#  name         = "gha-minion-1"
-#  machine_type = "n1-standard-2"
-#  description = "kubernetes master for lf class for gha"
-#
-#  tags = ["minion", "gha"]
-#
-#  allow_stopping_for_update = true
-#
-#  boot_disk {
-#    initialize_params {
-#      image = "ubuntu-os-cloud/ubuntu-2204-lts"
-#      size = 20
-#    }
-#  }
-#
-#  network_interface {
-#    # A default network is created for all GCP projects
-#    network = google_compute_network.vpc.self_link
-#    access_config {
-#
-#    }
-#  }
-#}
+resource "google_compute_instance" "minion1" {
+  name         = "gha-minion-1"
+  machine_type = "n1-standard-2"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 20
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+
+    }
+  }
+}
 
 resource "google_compute_network" "vpc" {
   name                    = "gha-kubernetes"

@@ -61,19 +61,6 @@
     dest: /etc/crictl.yaml
     mode: '0644'
 
-# install gvisor
-- name: containerd-shim-runsc-v1
-  ansible.builtin.get_url:
-    url: https://storage.googleapis.com/gvisor/releases/nightly/latest/containerd-shim-runsc-v1
-    dest: /usr/bin/containerd-shim-runsc-v1
-    mode: '0755'
-
-- name: gvisor/runsc
-  ansible.builtin.get_url:
-    url: https://storage.googleapis.com/gvisor/releases/nightly/latest/runsc
-    dest: /usr/bin/runsc
-    mode: '0755'
-
 - name: Restart service containerd
   ansible.builtin.systemd:
     state: restarted
