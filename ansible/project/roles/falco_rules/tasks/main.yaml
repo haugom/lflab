@@ -1,0 +1,11 @@
+- name: Copy file
+  ansible.builtin.copy:
+    src: falco_rules.local.yaml
+    dest: /etc/falco/falco_rules.local.yaml
+    mode: '0644'
+
+- name: Copy file
+  ansible.builtin.copy:
+    src: k8s_audit_rules.local.yaml
+    dest: /etc/falco/k8s_audit_rules.local.yaml
+    mode: '0644'

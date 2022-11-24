@@ -1,0 +1,76 @@
+#
+# Copyright (C) 2019 The Falco Authors.
+#
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+####################
+# Your custom rules!
+####################
+
+# Add new rules, like this one
+# - rule: The program "sudo" is run in a container
+#   desc: An event will trigger every time you run sudo in a container
+#   condition: evt.type = execve and evt.dir=< and container.id != host and proc.name = sudo
+#   output: "Sudo run in container (user=%user.name %container.info parent=%proc.pname cmdline=%proc.cmdline)"
+#   priority: ERROR
+#   tags: [users, container]
+
+# Or override/append to any rule, macro, or list from the Default Rules
+#
+
+- list: ignored_users
+  items: [
+    google_guest_ag
+    ]
+
+- rule: User mgmt binaries
+  desc: >
+    activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded.
+    Activity in containers is also excluded--some containers create custom users on top
+    of a base linux distribution at startup.
+    Some innocuous command lines that don't actually change anything are excluded.
+  condition: >
+    spawned_process and proc.name in (user_mgmt_binaries) and
+    not proc.name in (su, sudo, lastlog, nologin, unix_chkpwd) and not container and
+    not proc.pname in (cron_binaries, systemd, systemd.postins, udev.postinst, run-parts) and
+    not proc.cmdline startswith "passwd -S" and
+    not proc.cmdline startswith "useradd -D" and
+    not proc.cmdline startswith "systemd --version" and
+    not run_by_qualys and
+    not run_by_sumologic_securefiles and
+    not run_by_yum and
+    not run_by_ms_oms and
+    not run_by_google_accounts_daemon and
+    not chage_list and
+    not user_known_user_management_activities and
+    not proc.pname in (google_guest_ag)
+  output: >
+    User management binary command run outside of container
+    (user=%user.name user_loginuid=%user.loginuid command=%proc.cmdline pid=%proc.pid parent=%proc.pname gparent=%proc.aname[2] ggparent=%proc.aname[3] gggparent=%proc.aname[4])
+  priority: NOTICE
+  tags: [host, users, mitre_persistence]
+
+- rule: Terminal shell in container
+  desc: A shell was used as the entrypoint/exec point into a container with an attached terminal.
+  condition: >
+    spawned_process and container
+    and shell_procs and proc.tty != 0
+    and container_entrypoint
+    and not user_expected_terminal_shell_in_container_conditions
+  output: >
+    %evt.time,%k8s.deployment.name,%container.id,%container.name,%container.image
+  priority: NOTICE
+  tags: [container, shell, mitre_execution]
+
