@@ -1,0 +1,36 @@
+replicaCount: 1
+
+config:
+  rocketchat:
+    # -- Rocketchat Webhook URL (ex: <https://XXXX/hooks/YYYY>), if not `empty`, Rocketchat output is *enabled*
+    webhookurl: "http://rocketchat-rocketchat.rocketchat"
+    # -- Rocketchat icon (avatar)
+    icon: ""
+    # --  Rocketchat username
+    username: "falco-bot"
+    # -- `all` (default), `text` (only text is displayed in Rocketcaht), `fields` (only fields are displayed in Rocketchat)
+    outputformat: "all"
+    # -- minimum priority of event to use this output, order is `emergency\|alert\|critical\|error\|warning\|notice\|informational\|debug or ""`
+    minimumpriority: ""
+    # -- a Go template to format Rocketchat Text above Attachment, displayed in addition to the output from `slack.outputformat`. If empty, no Text is displayed before Attachment
+    messageformat: ""
+    # -- if true, checkcert flag will be ignored (server cert will always be checked)
+    mutualtls: false
+    # --  check if ssl certificate of the output is valid
+    checkcert: false
+
+webui:
+  enabled: true
+  replicaCount: 1
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: do-issuer
+    hosts:
+      - host: falco.lab.cloud.haugom.org
+        paths:
+          - path: /
+    tls:
+      - secretName: falco-tls
+        hosts:
+          - falco.lab.cloud.haugom.org

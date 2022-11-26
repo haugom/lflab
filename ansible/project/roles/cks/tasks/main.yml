@@ -98,6 +98,7 @@
       - kubeadm={{ kubernetes_version }}-00
       - kubectl={{ kubernetes_version }}-00
       - bash-completion
+      - nfs-common
       - jq
 
 - name: Prevent kubeadm from upgrading

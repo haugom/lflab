@@ -1,0 +1,16 @@
+---
+- hosts: all
+  tasks:
+    - name: Ping host
+      ansible.builtin.ping:
+
+- hosts: storage
+  become: yes
+  roles:
+    - { name: roles/storage }
+
+
+- name: Restart service nfs-kernel-server
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: restarted

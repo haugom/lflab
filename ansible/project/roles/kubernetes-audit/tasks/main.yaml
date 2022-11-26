@@ -13,6 +13,6 @@
 
 - name: Copy file
   ansible.builtin.copy:
-    src: audit-policy.yaml
+    src: empty-policy.yaml
     dest: /etc/kubernetes/audit-policy/audit-policy.yaml
     mode: '0644'

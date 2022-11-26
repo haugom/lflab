@@ -76,6 +76,31 @@ resource "google_compute_instance" "minion1" {
   }
 }
 
+resource "google_compute_instance" "storage0" {
+  name         = "gha-storage-0"
+  machine_type = "e2-medium"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 30
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+
+    }
+  }
+}
+
 resource "google_compute_network" "vpc" {
   name                    = "gha-kubernetes"
   auto_create_subnetworks = "true"

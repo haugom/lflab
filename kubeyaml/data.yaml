@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: data
+  name: data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: data
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: myclaim
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+          - mountPath: /data
+            name: data
+        resources: {}
+status: {}

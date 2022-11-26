@@ -1,0 +1,23 @@
+host: rocketchat.lab.cloud.haugom.org
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+mongodb:
+  persistence:
+    size: 1Gi
+  volumePermissions: { enabled: false }
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: do-issuer
+  pathType: Prefix
+  ingressClassName: "nginx"
+  path: /
+  tls:
+    - secretName: rocketchat-tls
+      hosts:
+        - rocketchat.lab.cloud.haugom.org
