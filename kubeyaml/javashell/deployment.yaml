@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: java
+  name: java
+  namespace: system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: java
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: java
+    spec:
+      containers:
+        - image: haugom/shelltest:1.1
+          imagePullPolicy: IfNotPresent
+          name: shelltest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: { }
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: { }

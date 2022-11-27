@@ -74,3 +74,45 @@
   priority: NOTICE
   tags: [container, shell, mitre_execution]
 
+
+- macro: possibly_parent_java_running_tomcat
+  condition: (proc.pname=java and proc.pcmdline contains /opt/app/app.jar)
+
+- rule: Run shell untrusted
+  desc: an attempt to spawn a shell below a non-shell application. Specific applications are monitored.
+  condition: >
+    spawned_process
+    and shell_procs
+    and proc.pname exists
+    and protected_shell_spawner
+    and not proc.pname in (shell_binaries, gitlab_binaries, cron_binaries, user_known_shell_spawn_binaries,
+                           needrestart_binaries,
+                           mesos_shell_binaries,
+                           erl_child_setup, exechealthz,
+                           PM2, PassengerWatchd, c_rehash, svlogd, logrotate, hhvm, serf,
+                           lb-controller, nvidia-installe, runsv, statsite, erlexec, calico-node,
+                           "puma reactor")
+    and not proc.cmdline in (known_shell_spawn_cmdlines)
+    and not proc.aname in (unicorn_launche)
+    and not consul_running_net_scripts
+    and not consul_running_alert_checks
+    and not nginx_starting_nginx
+    and not nginx_running_aws_s3_cp
+    and not run_by_package_mgmt_binaries
+    and not serf_script
+    and not check_process_status
+    and not run_by_foreman
+    and not python_mesos_marathon_scripting
+    and not splunk_running_forwarder
+    and not postgres_running_wal_e
+    and not redis_running_prepost_scripts
+    and not rabbitmq_running_scripts
+    and not rabbitmqctl_running_scripts
+    and not run_by_appdynamics
+    and not user_shell_container_exclusions
+  output: >
+    Shell spawned by untrusted binary (%evt.time.s,user=%user.name user_loginuid=%user.loginuid shell=%proc.name parent=%proc.pname
+    cmdline=%proc.cmdline pid=%proc.pid pcmdline=%proc.pcmdline gparent=%proc.aname[2] ggparent=%proc.aname[3]
+    aname[4]=%proc.aname[4] aname[5]=%proc.aname[5] aname[6]=%proc.aname[6] aname[7]=%proc.aname[7] container_id=%container.id image=%container.image.repository)
+  priority: ERROR
+  tags: [shell, mitre_execution]

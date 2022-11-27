@@ -7,7 +7,7 @@ config:
     # -- Rocketchat icon (avatar)
     icon: ""
     # --  Rocketchat username
-    username: "falco-bot"
+    username: "falco.bot"
     # -- `all` (default), `text` (only text is displayed in Rocketcaht), `fields` (only fields are displayed in Rocketchat)
     outputformat: "all"
     # -- minimum priority of event to use this output, order is `emergency\|alert\|critical\|error\|warning\|notice\|informational\|debug or ""`

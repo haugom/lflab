@@ -1,0 +1,17 @@
+- name: trivy apt key
+  ansible.builtin.apt_key:
+    url: https://aquasecurity.github.io/trivy-repo/deb/public.key
+    keyring:  /usr/share/keyrings/trivy-archive-keyring.gpg
+    state: present
+
+- name: Template a file to /etc/apt/sources.list.d/trivy.list
+  ansible.builtin.template:
+    src: trivy.sources.j2
+    dest: /etc/apt/sources.list.d/trivy.list
+    mode: '0644'
+
+- name: Install trivy
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - trivy
