@@ -1,5 +1,5 @@
 ---
-- hosts: kubernetes1
+- hosts: kubernetes
   become: yes
   roles:
     - { name: roles/crio }

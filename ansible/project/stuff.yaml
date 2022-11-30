@@ -1,5 +1,5 @@
 ---
-- hosts: minion
+- hosts: kubernetes
   become: yes
   roles:
     - role: gantsign.golang
@@ -9,5 +9,6 @@
     - { name: roles/gvisor }
     - { name: roles/containerd }
     - { name: roles/falco }
+    - { name: roles/falco_rules }
 #    - { name: roles/crio }
 

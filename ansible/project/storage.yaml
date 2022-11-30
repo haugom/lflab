@@ -10,7 +10,7 @@
     - { name: roles/storage }
 
 
-- name: Restart service nfs-kernel-server
-  ansible.builtin.service:
-    name: nfs-kernel-server
-    state: restarted
+#- name: Restart service nfs-kernel-server
+#  ansible.builtin.service:
+#    name: nfs-kernel-server
+#    state: restarted

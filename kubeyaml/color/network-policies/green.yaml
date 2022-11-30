@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-green-frontend
+  namespace: haugom
+spec:
+  policyTypes:
+    - Ingress
+  podSelector:
+    matchLabels:
+      app: color
+      variant: green-color-backend
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: color
+              variant: green-in-cluster
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all-green-frontend
+  namespace: haugom
+spec:
+  podSelector:
+    matchLabels:
+      app: color
+      variant: green
+  policyTypes:
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-green-frontend
+  namespace: haugom
+spec:
+  policyTypes:
+    - Egress
+  podSelector:
+    matchLabels:
+      app: color
+      variant: green
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 443
+      to:
+        - ipBlock:
+#            cidr: 194.63.249.211/32
+            cidr: 139.59.200.170/32

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: color
+spec:
+  template:
+    spec:
+      containers:
+        - name: color
+          envFrom:
+            - configMapRef:
+                name: config
+          volumeMounts:
+            - mountPath: /etc/ssl/certs
+              name: trust
+      volumes:
+        - name: trust
+          configMap:
+            name: trust
+

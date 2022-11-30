@@ -1,5 +1,5 @@
 ---
-- hosts: master
+- hosts: kunbernetes
   become: True
   roles:
     - { name: roles/containerd }
