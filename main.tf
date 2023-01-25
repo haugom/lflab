@@ -6,27 +6,7 @@ provider "google" {
   zone    = var.project_zone
 }
 
-//resource "google_compute_instance" "vm" {
-//  name         = "gha-play"
-//  machine_type = "f1-micro"
-//
-//  tags = ["play", "gha"]
-//
-//  boot_disk {
-//    initialize_params {
-//      image = "debian-cloud/debian-9"
-//    }
-//  }
-//
-//  network_interface {
-//    # A default network is created for all GCP projects
-//    network = google_compute_network.vpc.self_link
-//    access_config {
-//    }
-//  }
-//}
-
-resource "google_compute_instance" "master" {
+resource "google_compute_instance" "master0" {
   name         = "gha-master-0"
   machine_type = "n1-standard-2"
   description = "kubernetes master for lf class for gha"
@@ -47,57 +27,38 @@ resource "google_compute_instance" "master" {
     }
   }
 }
-
-//resource "google_compute_instance" "master2" {
-//  name         = "gha-master-1"
-//  machine_type = "n1-standard-2"
-//  description = "kubernetes master for lf class for gha"
-//
-//  tags = ["master", "gha"]
-//
-//  boot_disk {
-//    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
-//      size = 20
-//    }
-//  }
-//
-//  network_interface {
-//    # A default network is created for all GCP projects
-//    network = google_compute_network.vpc.self_link
-//    access_config {
-//    }
-//  }
-//}
-
-//resource "google_compute_instance" "master3" {
-//  name         = "gha-master-2"
-//  machine_type = "n1-standard-2"
-//  description = "kubernetes master for lf class for gha"
-//
-//  tags = ["master", "gha"]
-//
-//  boot_disk {
-//    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
-//      size = 20
-//    }
-//  }
-//
-//  network_interface {
-//    # A default network is created for all GCP projects
-//    network = google_compute_network.vpc.self_link
-//    access_config {
-//    }
-//  }
-//}
-
-resource "google_compute_instance" "worker" {
-  name         = "gha-worker-0"
+resource "google_compute_instance" "minion0" {
+  name         = "gha-minion-0"
   machine_type = "n1-standard-2"
   description = "kubernetes master for lf class for gha"
 
-  tags = ["worker", "gha"]
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size = 20
+    }
+  }
+
+  network_interface {
+    # A default network is created for all GCP projects
+    network = google_compute_network.vpc.self_link
+    access_config {
+
+    }
+  }
+}
+resource "google_compute_instance" "minion1" {
+  name         = "gha-minion-1"
+  machine_type = "n1-standard-2"
+  description = "kubernetes master for lf class for gha"
+
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
@@ -115,17 +76,19 @@ resource "google_compute_instance" "worker" {
   }
 }
 
-resource "google_compute_instance" "worker2" {
-  name         = "gha-worker-1"
-  machine_type = "n1-standard-2"
+resource "google_compute_instance" "storage0" {
+  name         = "gha-storage-0"
+  machine_type = "e2-medium"
   description = "kubernetes master for lf class for gha"
 
-  tags = ["worker", "gha"]
+  tags = ["minion", "gha"]
+
+  allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
-      size = 20
+      size = 30
     }
   }
 
@@ -137,52 +100,6 @@ resource "google_compute_instance" "worker2" {
     }
   }
 }
-
-//resource "google_compute_instance" "cp" {
-//  name         = "gha-cp-0"
-//  machine_type = "n1-standard-2"
-//  description = "kubernetes master for lf class for gha"
-//
-//  tags = ["master", "gha"]
-//
-//  boot_disk {
-//    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
-//      size = 20
-//    }
-//  }
-//
-//  network_interface {
-//    # A default network is created for all GCP projects
-//    network = google_compute_network.vpc.self_link
-//    access_config {
-//    }
-//  }
-//}
-//
-//resource "google_compute_instance" "worker-lab" {
-//  name         = "gha-lab-worker-0"
-//  machine_type = "n1-standard-2"
-//  description = "kubernetes master for lf class for gha"
-//
-//  tags = ["worker", "gha"]
-//
-//  boot_disk {
-//    initialize_params {
-//      image = "ubuntu-os-cloud/ubuntu-2204-lts"
-//      size = 20
-//    }
-//  }
-//
-//  network_interface {
-//    # A default network is created for all GCP projects
-//    network = google_compute_network.vpc.self_link
-//    access_config {
-//
-//    }
-//  }
-//}
-//
 
 resource "google_compute_network" "vpc" {
   name                    = "gha-kubernetes"
@@ -226,12 +143,12 @@ resource "google_compute_firewall" "kubernetes" {
 
   allow {
     protocol = "tcp"
-    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443", "179", "5473", "111", "2049", "6783", "8443"]
+    ports    = ["6443", "2379-2380", "10250", "10251", "10252", "30000-32767", "80", "443", "179", "5473", "111", "2049", "6783", "8443", "8765"]
   }
 
   allow {
     protocol = "udp"
     ports    = ["179", "4789", "111", "2049", "6783", "6784"]
   }
-  source_tags = ["worker", "master"]
+  source_tags = ["worker", "master", "minion"]
 }

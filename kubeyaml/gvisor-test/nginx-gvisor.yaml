@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-gvisor
+  name: nginx-gvisor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-gvisor
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx-gvisor
+    spec:
+      runtimeClassName: gvisor
+      nodeSelector:
+        kubernetes.io/hostname: gha-master-0
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane      
+      containers:
+      - image: nginx:1.23.2
+        name: nginx
+        resources: {}

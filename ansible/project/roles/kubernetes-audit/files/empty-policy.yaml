@@ -1,0 +1,28 @@
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+
+  # Don't log events requests because of performance impact.
+  - level: None
+    resources:
+      - group: "" # core
+        resources: ["events"]
+
+  - level: None
+    users:
+      - "system:serviceaccount:datadog:datadog-cluster-agent"
+
+  # Log secret changes in all other namespaces at the Metadata level.
+  - level: Metadata
+    resources:
+      - group: "" # core API group
+        resources: [ "secrets" ]
+
+
+  - level: Metadata
+    verbs: [ "create" ]
+    resources:
+      - group: ""
+        resources: [ "pods/exec", "pods/attach" ]
+
+  - level: None

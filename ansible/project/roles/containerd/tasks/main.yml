@@ -1,0 +1,70 @@
+---
+- name: Template a file to /etc/modules-load.d/containerd.conf
+  ansible.builtin.template:
+    src: containerd.conf.j2
+    dest: /etc/modules-load.d/containerd.conf
+    mode: '0644'
+
+- name: Template a file to /etc/sysctl.d/99-kubernetes-cri.conf
+  ansible.builtin.template:
+    src: 99-kubernetes-cri.conf.j2
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    mode: '0644'
+
+- name: sysctl --system
+  shell: sysctl -p --system
+
+- name: Install a list of packages
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose-plugin
+      - containerd.io
+
+- name: Enable service containerd
+  ansible.builtin.service:
+    name: containerd
+    enabled: yes
+    state: started
+
+- name: Create directory if it does not exist /opt/cni/bin
+  ansible.builtin.file:
+    path: /opt/cni/bin
+    state: directory
+    mode: '0755'
+
+- name: Install cni plugins
+  ansible.builtin.unarchive:
+    src: https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+    dest: /opt/cni/bin
+    remote_src: yes
+
+- name: Install crictl
+  ansible.builtin.unarchive:
+    src: "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ crictl_version }}/crictl-{{ crictl_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: Template a file to /etc/containerd/config.toml
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: /etc/containerd/config.toml
+    mode: '0644'
+  register: containerd
+
+# setup crictl to use containerd.sock
+- name: Template a file to /etc/crictl.yaml
+  ansible.builtin.template:
+    src: crictl.yaml.j2
+    dest: /etc/crictl.yaml
+    mode: '0644'
+
+- name: Restart service containerd
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: yes
+    name: containerd
+  when:
+    - containerd.changed

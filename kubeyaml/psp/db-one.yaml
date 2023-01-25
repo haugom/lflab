@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: db-one
+  name: db-one
+  namespace: geir
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-one
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: db-one
+    spec:
+      serviceAccountName: db-one
+      containers:
+      - image: mariadb
+        name: mariadb
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: lftest
+        ports:
+        - containerPort: 3306
+        resources: {}
+status: {}

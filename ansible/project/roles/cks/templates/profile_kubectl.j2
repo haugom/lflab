@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#
+# Ansible managed
+#
+
+source <(kubectl completion bash)
+source <(kubectl completion bash | sed 's/kubectl/k/g')
+alias kns='kubectl config set contexts.$(kubectl config current-context).namespace'

@@ -1,0 +1,40 @@
+# simple notes...
+
+sudo kubeadm init --cri-socket unix:///run/containerd/containerd.sock | tee output.txt
+
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/calico.yaml | kubectl apply -f -
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.crds.yaml
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.10.1
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+
+
+# kube state metrics
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install kube-state-metrics prometheus-community/kube-state-metrics
+
+# datadog
+helm repo add datadog https://helm.datadoghq.com
+helm repo update
+helm upgrade datadog datadog/datadog  --values datadog-values.yaml --set datadog.apiKey=xxx
+
+# metrics-server
+helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+helm repo update
+helm upgrade --install metrics-server metrics-server/metrics-server
+
+# https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+helm repo update
+helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+    --set nfs.server=x.x.x.x \
+    --set nfs.path=/exported/path
+k annotate storageclass nfs-client storageclass.kubernetes.io/is-default-class=true
+
+# https://github.com/RocketChat/helm-charts/tree/master/rocketchat
+helm install rocketchat rocketchat/rocketchat --set mongodb.auth.password=$(echo -n $(openssl rand -base64 32)),mongodb.auth.rootPassword=$(echo -n $(openssl rand -base64 32)) --values rocketchat-values.yaml
+
+https://rocketchat.lab.cloud.haugom.org:31795/channel/general
+https://falco.lab.cloud.haugom.org:31795

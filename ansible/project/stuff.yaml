@@ -1,0 +1,14 @@
+---
+- hosts: kubernetes
+  become: yes
+  roles:
+    - role: gantsign.golang
+      golang_gopath: '$HOME/workspace-go'
+    - { name: roles/helm }
+    - { name: roles/cks }
+    - { name: roles/gvisor }
+    - { name: roles/containerd }
+    - { name: roles/falco }
+    - { name: roles/falco_rules }
+#    - { name: roles/crio }
+

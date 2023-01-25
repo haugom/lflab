@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-blue-frontend
+  namespace: haugom
+spec:
+  podSelector:
+    matchLabels:
+      app: color
+      variant: blue-color-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: color
+              variant: blue

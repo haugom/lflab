@@ -1,0 +1,23 @@
+- name: Install a list of packages
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - nfs-kernel-server
+
+- name: Create directory if it does not exist /mnt/shares/
+  ansible.builtin.file:
+    path: /mnt/shares
+    state: directory
+    mode: '0755'
+
+
+- name: Generate /etc/exports file
+  ansible.builtin.template:
+    src=exports.j2
+    dest=/etc/exports
+#  register: exports
+
+- name: export fs
+  ansible.builtin.command: exportfs -a
+
+

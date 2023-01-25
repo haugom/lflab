@@ -1,0 +1,7 @@
+provider: digitalocean
+digitalocean:
+  secretName: "do-token"
+domainFilters:
+  - cloud.haugom.org
+sources:
+  - ingress

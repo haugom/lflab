@@ -15,13 +15,13 @@
   ansible.builtin.template:
     src: crio-list.j2
     dest: /etc/apt/sources.list.d/crio.list
-    mode: '0640'
+    mode: '0644'
 
 - name: Template a file to /etc/apt/sources.list.d/libcontainers-stable.list
   ansible.builtin.template:
     src: libcontainers-stable.j2
     dest: /etc/apt/sources.list.d/libcontainers-stable.list
-    mode: '0640'
+    mode: '0644'
 
 - name: Install a list of packages
   ansible.builtin.apt:

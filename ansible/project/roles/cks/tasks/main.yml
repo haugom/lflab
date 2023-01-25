@@ -9,6 +9,13 @@
   become: true
   changed_when: False
 
+- name: Disable swap permanently, persist reboots
+  replace:
+    path: /etc/fstab
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
+    backup: yes
+
 - name: "Mobprobe the {{ item }} module"
   modprobe:
     name: "{{ item }}"
@@ -16,13 +23,6 @@
   loop:
     - overlay
     - br_netfilter
-
-- name: Disable swap permanently, persist reboots
-  replace:
-    path: /etc/fstab
-    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
-    replace: '#\1\2\3swap\4'
-    backup: yes
 
 # https://packages.cloud.google.com/apt/doc/apt-key.gpg
 - name: kubernetes apt key
@@ -41,37 +41,13 @@
   ansible.builtin.template:
     src: kubernetes.sources.j2
     dest: /etc/apt/sources.list.d/kubernetes.list
-    mode: '0600'
-
-#- name: Create directory if it does not exist /etc/containers/
-#  ansible.builtin.file:
-#    path: /etc/containers
-#    state: directory
-#    mode: '0755'
+    mode: '0644'
 
 - name: Template a file to /etc/apt/sources.list.d/docker.list
   ansible.builtin.template:
     src: docker.sources.j2
     dest: /etc/apt/sources.list.d/docker.list
-    mode: '0600'
-
-#- name: Template a file to /etc/modules-load.d/containerd.conf
-#  ansible.builtin.template:
-#    src: containerd.conf.j2
-#    dest: /etc/modules-load.d/containerd.conf
-#    mode: '0600'
-#  register: result1
-
-#- name: Template a file to /etc/sysctl.d/99-kubernetes-cri.conf
-#  ansible.builtin.template:
-#    src: 99-kubernetes-cri.conf.j2
-#    dest: /etc/sysctl.d/99-kubernetes-cri.conf
-#    mode: '0600'
-#  register: result2
-#
-#- name: sysctl --system
-#  shell: sysctl -p --system
-#  when: result1.changed or result2.changed
+    mode: '0644'
 
 - name: set ip_forward
   ansible.posix.sysctl:
@@ -89,6 +65,25 @@
     state: present
     reload: yes
 
+- name: Prevent kubeadm from upgrading
+  ansible.builtin.dpkg_selections:
+    name: kubeadm
+    selection: install
+- name: Prevent kubelet from upgrading
+  ansible.builtin.dpkg_selections:
+    name: kubelet
+    selection: install
+- name: Prevent kubectl from upgrading
+  ansible.builtin.dpkg_selections:
+    name: kubectl
+    selection: install
+
+- name: "Install yq {{ yq_version }}"
+  get_url:
+    url: "https://github.com/mikefarah/yq/releases/download/{{ yq_version }}/yq_linux_amd64"
+    dest: /usr/local/bin/yq
+    mode: 'u=rx,g=rx,o=rx'
+
 - name: Install a list of packages
   ansible.builtin.apt:
     update_cache: yes
@@ -96,14 +91,15 @@
       - apt-transport-https
       - ca-certificates
       - curl
+      - software-properties-common
       - gnupg
       - lsb-release
       - kubelet={{ kubernetes_version }}-00
       - kubeadm={{ kubernetes_version }}-00
       - kubectl={{ kubernetes_version }}-00
-      - docker-ce-cli
-#      - containerd.io
       - bash-completion
+      - nfs-common
+      - jq
 
 - name: Prevent kubeadm from upgrading
   ansible.builtin.dpkg_selections:
@@ -124,67 +120,19 @@
     dest: /usr/bin/k
     state: link
 
-#- name: Create directory if it does not exist /etc/containerd/
-#  ansible.builtin.file:
-#    path: /etc/containerd
-#    state: directory
-#    mode: '0755'
-#
-#- name: Template a file to /etc/containerd/config.toml.j2
-#  ansible.builtin.template:
-#    src: config.toml.j2
-#    dest: /etc/containerd/config.toml
-#    mode: '0600'
-#
-#- name: Enable service containerd
-#  ansible.builtin.service:
-#    name: containerd
-#    enabled: yes
-#    state: started
-
-#- name: Just force systemd to reread configs (2.4 and above)
-#  ansible.builtin.systemd:
-#    daemon_reload: yes
-
 - name: Generate /etc/hosts file
   ansible.builtin.template:
     src=hosts.j2
     dest=/etc/hosts
 
-#- name: Create directory if it does not exist /etc/cni/net.d/
-#  ansible.builtin.file:
-#    path: /etc/cni/net.d
-#    state: directory
-#    mode: '0755'
-#
-#- name: Template a file to /etc/cni/net.d/10-containerd-net.conflist
-#  ansible.builtin.template:
-#    src: 10-containerd-net.conflist.j2
-#    dest: /etc/cni/net.d/10-containerd-net.conflist
-#    mode: '0600'
-#  register: cni_bridge
-#
-#- name: Restart service containerd
-#  ansible.builtin.service:
-#    name: containerd
-#    state: restarted
-#  when:
-#    - cni_bridge.changed
+- name: Download calico.yaml
+  get_url:
+    url: https://docs.projectcalico.org/manifests/calico.yaml
+    dest: /home/haugom/calico.yaml
+    mode: '0444'
 
-
-#- name: Download calico.yaml
-#  get_url:
-#    url: https://docs.projectcalico.org/manifests/calico.yaml
-#    dest: /home/haugom/calico.yaml
-#    mode: '0444'
-
-#- name: Template a file to /etc/default/kubelet
-#  ansible.builtin.template:
-#    src: kubelet.j2
-#    dest: /etc/default/kubelet
-#    mode: '0600'
-
-#- name: Generate /etc/kubernetes/kubeadm-config.yaml file
-#  ansible.builtin.template:
-#    src=kubeadm-config.yaml.j2
-#    dest=/etc/kubernetes/kubeadm-config.yaml
+- name: Template a file to /etc/profile.d/
+  ansible.builtin.template:
+    src: profile_kubectl.j2
+    dest: /etc/profile.d/kubectl.sh
+    mode: '0644'

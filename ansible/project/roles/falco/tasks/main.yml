@@ -1,0 +1,24 @@
+- name: falco apt key
+  ansible.builtin.apt_key:
+    url: https://falco.org/repo/falcosecurity-3672BA8F.asc
+    keyring: /usr/share/keyrings/falco-archive-keyring
+    state: present
+
+- name: Template a file to /etc/apt/sources.list.d/falco.list
+  ansible.builtin.template:
+    src: falco-list.j2
+    dest: /etc/apt/sources.list.d/falco.list
+    mode: '0644'
+
+- name: Install falco
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - linux-headers-5.15.0-1022-gcp # uname -r
+      - "falco={{ falco_version }}"
+
+- name: Start falco
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: falco
