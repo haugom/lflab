@@ -1,0 +1,25 @@
+provider: google
+
+domainFilters:
+  - a.organa.no
+
+policy: sync
+
+sources:
+  - ingress
+
+env:
+  - name: GOOGLE_APPLICATION_CREDENTIALS
+    value: /etc/secrets/service-account/external-dns-aalderan.json
+
+extraArgs:
+  - --google-zone-visibility=public
+
+extraVolumeMounts:
+  - name: google-service-account
+    mountPath: /etc/secrets/service-account/
+
+extraVolumes:
+  - name: google-service-account
+    secret:
+      secretName: external-dns
