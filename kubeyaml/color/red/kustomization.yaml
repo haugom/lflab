@@ -2,17 +2,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 namePrefix: red-
-commonLabels:
-  variant: red
 
 resources:
   - ../color
 
 configMapGenerator:
-  - name: config
-    literals:
+  - literals:
       - COLOR=red
       - BACKEND=http://red-color-backend.haugom.svc/data
+    name: config
 
-patchesStrategicMerge:
-  - deployment.yaml
+labels:
+  - includeSelectors: true
+    pairs:
+      variant: red
+patches:
+  - path: deployment.yaml

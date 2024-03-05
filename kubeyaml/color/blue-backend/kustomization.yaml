@@ -4,17 +4,19 @@ kind: Kustomization
 namePrefix: blue-
 nameSuffix: -backend
 
-commonLabels:
-  variant: blue-color-backend
 
 resources:
   - ../color
 
 configMapGenerator:
-  - name: config
-    literals:
+  - literals:
       - COLOR=blue
       - DATA=blue-backend
+    name: config
 
-patchesStrategicMerge:
-  - deployment.yaml
+labels:
+  - includeSelectors: true
+    pairs:
+      variant: blue-color-backend
+patches:
+  - path: deployment.yaml

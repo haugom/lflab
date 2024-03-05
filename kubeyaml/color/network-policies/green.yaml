@@ -34,7 +34,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: deny-green-frontend
-  namespace: haugom
+  namespace: system
 spec:
   policyTypes:
     - Egress

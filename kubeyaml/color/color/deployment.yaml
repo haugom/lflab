@@ -4,6 +4,7 @@ metadata:
   labels:
     app: color
   name: color
+  namespace: system
 spec:
   replicas: 1
   selector:
